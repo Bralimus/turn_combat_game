@@ -16,8 +16,11 @@ class Rectangle(Displayable):
     def __init__(self, x, y, width, height, colour = "white", visible = False):
         super().__init__(colour, visible)
         self.rect = pygame.Rect(x, y, width, height)
-        self.image = pygame.Surface((width, height))
-        self.image.fill(colour)
+        if colour is None:
+            self.image = pygame.Surface((width, height), pygame.SRCALPHA)
+        else:
+            self.image = pygame.Surface((width, height))
+            self.image.fill(colour)
 
 
 class InputBox(Rectangle):
@@ -87,12 +90,7 @@ class Text(Rectangle):
             line_rect.y = y_offset
             self.image.blit(line_surface, line_rect)
             y_offset += font.get_height()
-        
-        # Position the entire text block at the specified position
-        self.rect = self.image.get_rect()
-        self.rect.centerx = self.x
-        self.rect.centery = self.y
-    
+
     def wrap_text(self, text, max_width, max_height):
         words = text.split()
         current_font_size = self.font_size

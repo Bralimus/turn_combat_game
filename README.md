@@ -8,6 +8,7 @@
 - enemy/player square,circle,triangle
 - health bars or number displays
 - visual elements for whose turn it is
+- Question box in bottom corner, when clicked goes to help/instructions page
 
 *Back-End*
 - delay between attacks
