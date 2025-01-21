@@ -9,18 +9,59 @@ class Displayable(pygame.sprite.Sprite):
             super().__init__()
         self.colour = colour
         self.visible = visible
+        self.alpha = 255
+        self.fade_state = "visible"
+        self.display_timer = 0
         if self.containers:
             self.containers.add(self)
+
+    def update_fade(self, dt):
+        if self.fade_state == "fade_in": #setting .fade_state = "fade_in" starts process
+            self.alpha = min(255, self.alpha + (255 * dt))
+            if self.alpha == 255:
+                self.fade_state = "visible"
+                self.display_timer = 0
+        elif self.fade_state == "visible":
+            self.display_timer += dt
+            if self.display_timer >= 2:
+                self.fade_state = "fade_out"
+        elif self.fade_state == "fade_out":
+            self.alpha = max(0, self.alpha - (255 * dt))
 
 class Rectangle(Displayable):
     def __init__(self, x, y, width, height, colour = "white", visible = False):
         super().__init__(colour, visible)
-        self.rect = pygame.Rect(x, y, width, height)
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
         if colour is None:
-            self.image = pygame.Surface((width, height), pygame.SRCALPHA)
+            self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         else:
-            self.image = pygame.Surface((width, height))
-            self.image.fill(colour)
+            self.image = pygame.Surface((self.width, self.height))
+            self.image.fill(self.colour)
+
+    def update_size(self, new_width=None, new_height=None):
+        if new_width is not None:
+            self.width = new_width
+            self.rect.width = new_width
+        if new_height is not None:
+            self.height = new_height
+            self.rect.height = new_height
+        if self.colour is None:
+            self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        else:
+            self.image = pygame.Surface((self.width, self.height))
+            self.image.fill(self.colour)
+
+    def update_position(self, new_x=None, new_y=None):
+        if new_x is not None:
+            self.x = new_x
+            self.rect.x = new_x
+        if new_y is not None:
+            self.y = new_y
+            self.rect.y = new_y
 
 
 class InputBox(Rectangle):
@@ -63,19 +104,21 @@ class Text(Rectangle):
                  words_colour = "black", colour = "white", visible = False):
         super().__init__(x, y, width, height, colour, visible)
         self.font_size = font_size
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
         self._words = words
         self.words_colour = words_colour
         self.update_text(words)
 
     def update_text(self, new_words):
         self._words = new_words
-   
+
+        if self.colour is None:
+            self.image = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        else:
+            self.image = pygame.Surface((self.width, self.height))
+            self.image.fill(self.colour)
+
         wrapped_lines = self.wrap_text(self._words, self.width - 5, self.height - 5)
-        font = pygame.font.Font(None, self.font_size) #Not duplicate, update after wrap
+        font = pygame.font.Font(None, self.font_size)
         
         line_height = font.get_height()
         total_text_height = line_height * len(wrapped_lines)
