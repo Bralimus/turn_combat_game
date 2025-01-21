@@ -62,42 +62,6 @@ class Rectangle(Displayable):
         if new_y is not None:
             self.y = new_y
             self.rect.y = new_y
-
-
-class InputBox(Rectangle):
-    def __init__(self, colour, width, height, x, y, visible, font_size, words = ""):
-        super().__init__(colour, width, height, x, y, visible)
-        self.font_size = font_size
-        self.words = words
-        self.active = False
-        self.font = pygame.font.Font(None, font_size)
-        self.colour_inactive = colour
-        self.colour_active = GREEN
-        
-    
-    def change_active_status(self, force_active=None):
-        if force_active is None:
-            self.active = not self.active
-        else:
-            self.active = force_active
-        self.colour = self.colour_active if self.active else self.colour_inactive
-        self.image.fill(self.colour)
-    
-    def handle_event(self, event):
-        if self.active:
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_BACKSPACE:
-                    self.words = self.words[:-1]
-                else:
-                    self.words += event.unicode
-    
-    def draw(self, screen):
-        if self.visible:
-            screen.blit(self.image, self.rect)
-            text_surface = self.font.render(self.words, True, WHITE)
-            text_rect = text_surface.get_rect(center=self.rect.center)
-            screen.blit(text_surface, text_rect)
-
     
 class Text(Rectangle):
     def __init__(self, x, y, width, height, words, font_size, 
