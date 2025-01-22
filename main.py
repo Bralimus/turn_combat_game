@@ -4,7 +4,7 @@
 import pygame
 from menus import GameMenus
 from constants import *
-from displayable import Displayable, Rectangle, Text
+from displayable import Displayable
 from battle_actions import BattleScreen
 
 def main():
